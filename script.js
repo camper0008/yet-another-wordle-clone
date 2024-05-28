@@ -132,6 +132,14 @@ function submit_answer(word) {
     rerender(word);
 }
 
+function word_exists(word, words) {
+    return words.some(w => {
+        return w
+            .map((ch, idx) => { return word[idx] === ch })
+            .reduce((acc, v) => acc && v);
+    })
+}
+
 function input(key, word, words) {
     if (has_won(word) || has_lost()) {
         return;
@@ -150,12 +158,7 @@ function input(key, word, words) {
             return;
         }
         const submitted = row_state[answers_submitted];
-        const word_exists = words.some(word => {
-            return word
-                .map((ch, idx) => { return submitted[idx] === ch })
-                .reduce((acc, v) => acc && v);
-        })
-        if (!word_exists) {
+        if (!word_exists(submitted, words)) {
             document.querySelector("#result").innerText = "that's not a word 😾";
             return;
         }
