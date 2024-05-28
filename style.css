@@ -80,10 +80,12 @@ body {
 
 .partial {
     background-color: #FFFD82;
+    border-color: #FFFD82;
     color: var(--dark);
 }
 
 .correct {
     background-color: #519872;
+    border-color: #519872;
     color: var(--dark);
 }
