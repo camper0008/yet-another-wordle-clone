@@ -48,6 +48,7 @@ body {
 
 #keyboard > .row > .cell {
     cursor: pointer;
+    animation: click-animation 0.2s;
 }
 
 .invisible-text {

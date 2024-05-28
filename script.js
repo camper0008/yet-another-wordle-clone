@@ -1,5 +1,17 @@
 const CONTROL_CHARACTER = "@";
 
+function bob_anim(element, duration) {
+    element.animate(
+        [
+          {},
+          {transform: "scale(1.05) rotate(5deg)"},
+          {transform: "scale(1.05) rotate(-5deg)"},
+          {},
+        ],
+        { duration: duration || 150 }
+    );
+}
+
 function get_word_list(path) {
     return fetch(path)
         .then(res => res.text())
@@ -25,6 +37,13 @@ function has_lost() {
 function rerender(word) {
     const input = document.getElementById("input");
     input.innerHTML = row_state_inner_html(word);
+    window.requestAnimationFrame(() => {
+        const id = answers_submitted + "-" + characters_written;
+        const maybe_cell = document.getElementById(id);
+        if (maybe_cell) {
+            bob_anim(maybe_cell);
+        }
+    })
     const result_text = document.getElementById("result");
     const try_again = document.getElementById("try-again");
     if (has_won(word)) {
@@ -55,6 +74,7 @@ function append_keyboard_cells(result, word, words) {
                 cell.classList.add("special");
             }
             cell.addEventListener("click", (event) => {
+                bob_anim(cell);
                 input(character, word, words)
             })
             container.appendChild(cell);
@@ -90,7 +110,10 @@ function classes_for_submitted_row(row, word) {
     const classes = submitted_row_classes(row, word);
     for (let i = 0; i < row.length; ++i) {
         const kb_cell = document.getElementById("keyboard-" + row[i]);
-        kb_cell.classList.add(classes[i]);
+        if (!kb_cell.classList.contains(classes[i])) {
+            kb_cell.classList.add(classes[i]);
+            bob_anim(kb_cell, 300);
+        }
     }
     return classes;
 }
@@ -162,12 +185,12 @@ const row_state = [
 
 function row_state_inner_html(word) {
     const result = document.createElement("div");
-    for (idx in row_state) {
-        const row = row_state[idx];
+    for (row_idx in row_state) {
+        const row = row_state[row_idx];
         const container = document.createElement("div");
         container.classList.add("row");
         let classes = ["_", "_", "_", "_", "_"];
-        if (idx < answers_submitted) {
+        if (row_idx < answers_submitted) {
             classes = classes_for_submitted_row(row, word);
         }
         for (cell_idx in row) {
@@ -179,6 +202,7 @@ function row_state_inner_html(word) {
             }
             cell.classList.add(classes[cell_idx]);
             cell.classList.add("cell");
+            cell.id = row_idx + "-" + cell_idx;
             container.appendChild(cell);
         }
         result.appendChild(container);
