@@ -21,11 +21,24 @@ body {
 #result, 
 #try-again {
     text-align: center;
-    margin: 0;
 }
 
-#try-again:not(.visible) {
-    display: none;
+#try-again > * {
+    margin: 0;
+    margin-top: 0.5rem;
+    transform: scale(0);
+}
+
+#try-again.visible > * {
+    animation: bob-anim 500ms;
+    transform: scale(1);
+}
+
+@keyframes bob-anim {
+    0% { transform: scale(0) }
+    33% { transform: scale(1.05) rotate( 5deg); }
+    66% { transform: scale(1.05) rotate(-5deg); }
+    100% { transform: scale(1.0) }
 }
 
 .cell {

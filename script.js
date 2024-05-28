@@ -1,15 +1,17 @@
 const CONTROL_CHARACTER = "@";
 
 function bob_anim(element, duration) {
-    element.animate(
-        [
-          {},
-          {transform: "scale(1.05) rotate(5deg)"},
-          {transform: "scale(1.05) rotate(-5deg)"},
-          {},
-        ],
-        { duration: duration || 150 }
-    );
+    window.requestAnimationFrame(() => {
+        element.animate(
+            [
+              {},
+              {transform: "scale(1.05) rotate(5deg)"},
+              {transform: "scale(1.05) rotate(-5deg)"},
+              {},
+            ],
+            { duration: duration || 150 }
+        );
+    })
 }
 
 function get_word_list(path) {
@@ -37,20 +39,23 @@ function has_lost() {
 function rerender(word) {
     const input = document.getElementById("input");
     input.innerHTML = row_state_inner_html(word);
-    window.requestAnimationFrame(() => {
-        const id = answers_submitted + "-" + characters_written;
-        const maybe_cell = document.getElementById(id);
-        if (maybe_cell) {
-            bob_anim(maybe_cell);
-        }
-    })
+    let newest_input_id;
+    if (characters_written > 0) {
+        newest_input_id = answers_submitted + "-" + (characters_written - 1);
+    }
+    const maybe_cell = document.getElementById(newest_input_id);
+    if (maybe_cell) {
+        bob_anim(maybe_cell);
+    }
     const result_text = document.getElementById("result");
     const try_again = document.getElementById("try-again");
     if (has_won(word)) {
         result_text.innerText = "u won yippie 😺";
+        try_again.innerHTML = "<h1>try again?</h1>"
         try_again.classList.add("visible");
     } else if (has_lost()) {
         result_text.innerText = "you lost! the word was " + word.reduce((acc, v) => acc + v) + " 😿";
+        try_again.innerHTML = "<h1>try again?</h1>"
         try_again.classList.add("visible");
     } else {
         const guesses = row_state.length - answers_submitted
